@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="fil">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mt. Balagbag tayo! Nov 15–16</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;800&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sea: #0e4d64;
+    --deep: #072f3d;
+    --sand: #f7ead0;
+    --mango: #ffc93c;
+    --leaf: #2f9e6b;
+    --no: #b8c4c9;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; min-height: 100%; }
+  body {
+    font-family: "Nunito", system-ui, sans-serif;
+    color: var(--sand);
+    background-color: var(--sea);
+    background-image:
+      linear-gradient(rgba(7,47,61,.55), rgba(7,47,61,.8)),
+      url("bg.jpg");
+    background-size: cover;
+    background-position: center;
+    display: grid;
+    place-items: center;
+    padding: 24px 18px;
+    min-height: 100vh;
+  }
+  main { width: 100%; max-width: 460px; }
+  h1 {
+    font-family: "Bricolage Grotesque", system-ui, sans-serif;
+    font-weight: 800;
+    font-size: clamp(2.6rem, 11vw, 3.8rem);
+    line-height: 1;
+    margin: 0 0 10px;
+  }
+  .date {
+    font-family: "Bricolage Grotesque", system-ui, sans-serif;
+    font-weight: 500;
+    font-size: 1.3rem;
+    margin: 0 0 28px;
+    color: var(--mango);
+  }
+  .card {
+    background: var(--sand);
+    color: var(--deep);
+    border-radius: 22px;
+    padding: 26px 22px;
+  }
+  label { display: block; font-weight: 700; margin-bottom: 6px; }
+  input[type="text"] {
+    width: 100%;
+    font: inherit;
+    font-size: 1.05rem;
+    padding: 13px 14px;
+    border: 2px solid var(--deep);
+    border-radius: 12px;
+    background: #fff;
+    color: var(--deep);
+  }
+  .question {
+    font-family: "Bricolage Grotesque", system-ui, sans-serif;
+    font-weight: 800;
+    font-size: 1.5rem;
+    margin: 22px 0 14px;
+  }
+  .choices { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  button, .link-btn {
+    font: inherit;
+    font-weight: 800;
+    font-size: 1.15rem;
+    padding: 16px;
+    border: 0;
+    border-radius: 14px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    display: block;
+    transition: transform .12s ease;
+  }
+  button:active, .link-btn:active { transform: scale(.97); }
+  button:disabled { opacity: .6; cursor: wait; }
+  .yes { background: var(--leaf); color: #fff; }
+  .no { background: var(--no); color: var(--deep); }
+  .link-btn { background: var(--deep); color: var(--sand); margin-top: 12px; }
+  .info { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 0 0 16px; }
+  .info .link-btn { margin-top: 0; font-size: 1rem; padding: 14px 10px; }
+  .link-btn.alt { background: var(--mango); color: var(--deep); }
+  .error { color: #a3261a; font-weight: 700; min-height: 1.3em; margin: 12px 0 0; }
+  .hidden { display: none; }
+  .result h2 {
+    font-family: "Bricolage Grotesque", system-ui, sans-serif;
+    font-size: 1.8rem;
+    margin: 0 0 6px;
+  }
+  .result p { margin: 0 0 8px; line-height: 1.5; }
+  :focus-visible { outline: 3px solid var(--mango); outline-offset: 3px; }
+  @media (prefers-reduced-motion: reduce) { button, .link-btn { transition: none; } }
+</style>
+</head>
+<body>
+<main>
+  <h1>Mt. Balagbag tayo!</h1>
+  <p class="date">Nobyembre 15–16</p>
+
+  <div class="info">
+    <a class="link-btn alt" id="page-link" href="#" target="_blank" rel="noopener">Facebook page</a>
+    <a class="link-btn alt" id="loc-link" href="#" target="_blank" rel="noopener">Location sa Maps</a>
+  </div>
+
+  <section class="card" id="form">
+    <label for="name">Pangalan mo</label>
+    <input type="text" id="name" autocomplete="name" placeholder="Hal. Juan Dela Cruz">
+
+    <p class="question">Sasama ka ba?</p>
+    <div class="choices">
+      <button class="yes" id="btn-yes" type="button">Oo, sama ako</button>
+      <button class="no" id="btn-no" type="button">Hindi ako makakasama</button>
+    </div>
+    <p class="error" id="error" role="alert"></p>
+  </section>
+
+  <section class="card result hidden" id="result-yes">
+    <h2>Sige, see you!</h2>
+    <p>Naka-save na ang sagot mo. Nasa taas ang link ng page at ang location.</p>
+  </section>
+
+  <section class="card result hidden" id="result-no">
+    <h2>Okay lang!</h2>
+    <p>Naka-save na ang sagot mo. Sa susunod na lang.</p>
+  </section>
+</main>
+
+<script>
+  // ====== PALITAN MO LANG ITO ======
+  const WEB_APP_URL   = "https://script.google.com/macros/s/AKfycbxubsNJ1YxFgo97jXOqStU1E_9yKJnpif0tayCSNSnqC2BRjG5Ktp7Wm_fE15XK2SjC/exec";
+  const PAGE_LINK     = "https://www.facebook.com/QueenBResort";  // link ng page na pupuntahan
+  const LOCATION_LINK = "https://maps.app.goo.gl/zwQjkm8auzhwoU3r8";   // link ng Google Maps
+  // =================================
+
+  const $ = (id) => document.getElementById(id);
+  const errorEl = $("error");
+  $("page-link").href = PAGE_LINK;
+  $("loc-link").href = LOCATION_LINK;
+
+  async function reply(answer) {
+    const name = $("name").value.trim();
+    errorEl.textContent = "";
+
+    if (!name) {
+      errorEl.textContent = "Ilagay muna ang pangalan mo.";
+      $("name").focus();
+      return;
+    }
+    if (WEB_APP_URL.startsWith("PASTE")) {
+      errorEl.textContent = "Wala pang Apps Script URL. Ilagay muna sa code.";
+      return;
+    }
+
+    $("btn-yes").disabled = true;
+    $("btn-no").disabled = true;
+
+    try {
+      // no-cors: hindi mababasa ang response, pero ma-sesend ang data sa Sheet
+      await fetch(
+        WEB_APP_URL + "?name=" + encodeURIComponent(name) + "&answer=" + answer,
+        { mode: "no-cors" }
+      );
+    } catch (e) {
+      errorEl.textContent = "Hindi na-send. Check ang internet mo at subukan ulit.";
+      $("btn-yes").disabled = false;
+      $("btn-no").disabled = false;
+      return;
+    }
+
+    $("form").classList.add("hidden");
+    if (answer === "yes") {
+      $("result-yes").classList.remove("hidden");
+    } else {
+      $("result-no").classList.remove("hidden");
+    }
+  }
+
+  $("btn-yes").addEventListener("click", () => reply("yes"));
+  $("btn-no").addEventListener("click", () => reply("no"));
+</script>
+</body>
+</html>
